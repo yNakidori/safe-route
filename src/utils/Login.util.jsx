@@ -32,6 +32,6 @@ export const logout = async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    throw error(`Logout failed: ${error.message}`);
+    throw new Error(`Logout failed: ${error.message}`);
   }
 };

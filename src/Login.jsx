@@ -1,16 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { login } from "./utils/Login.util";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await login(email, password);
-      // Handle successful login (e.g., redirect to dashboard)
+      navigate("/main");
       alert("Login successful!");
     } catch (err) {
       setError(err.message);
@@ -92,7 +94,12 @@ export default function Login() {
               <div class="mt-4 text-sm text-gray-600 text-center">
                 <p>ou use seu email e senha</p>
               </div>
-              <form action="#" method="POST" class="space-y-4">
+              <form onSubmit={handleSubmit} class="space-y-4">
+                {error && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {error}
+                  </div>
+                )}
                 <div>
                   <label className="block text-gray-700">Email</label>
                   <input
@@ -118,15 +125,15 @@ export default function Login() {
                     type="submit"
                     class="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 outline-none focus:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300"
                   >
-                    Sign Up
+                    Entrar
                   </button>
                 </div>
               </form>
               <div class="mt-4 text-sm text-gray-600 text-center">
                 <p>
-                  Já tem uma conta?{" "}
+                  Não tem uma conta?{" "}
                   <a href="/register" class="text-black hover:underline">
-                    Faça login aqui
+                    Registre-se aqui
                   </a>
                 </p>
               </div>
