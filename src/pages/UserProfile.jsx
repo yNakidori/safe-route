@@ -100,7 +100,7 @@ export default function UserProfile() {
             </svg>
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Editar Perfil</h2>
-          <p className="text-gray-600">Complete suas informações para uma experiência personalizada</p>
+          <p className="text-gray-600">Espera só mais um pouquinho, complete suas informações para uma experiência personalizada</p>
         </div>
 
         {/* Form Card */}
