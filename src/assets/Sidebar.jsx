@@ -1,6 +1,18 @@
 import React from "react";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../firebase/firebase.config";
 
 export default function Sidebar() {
+
+  const handleLogout = async () => {
+  }
+
+  const handleStatus = async () => {
+  }
+
+  const fetchProfile = async () => {
+  }
+
   return (
     <div className="h-screen w-64 bg-gray-100 border-r flex flex-col justify-between">
       <div className="p-6">

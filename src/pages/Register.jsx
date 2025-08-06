@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { register } from "../utils/Signin.util";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -12,6 +14,7 @@ export default function Register() {
       await register(email, password);
       // Handle successful registration (e.g., redirect to login)
       alert("Registration successful!");
+      navigate("/main");
     } catch (err) {
       setError(err.message);
       console.error("Registration error:", err);

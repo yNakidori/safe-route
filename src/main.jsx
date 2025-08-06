@@ -29,9 +29,9 @@ createRoot(document.getElementById("root")).render(
         <Route
           path="/main"
           element={
-            <ProfileRoute>
+            <PrivateRoute requireProfileComplete={true}>
               <MainPage />
-            </ProfileRoute>
+            </PrivateRoute>
           }
         />
       </Routes>
