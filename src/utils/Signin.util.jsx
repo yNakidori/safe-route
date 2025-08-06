@@ -4,24 +4,27 @@ import {
   onAuthStateChanged,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
-import app from "../firebase/firebase.config";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { app } from "../firebase/firebase.config";
 
-const auth = getAuth();
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Function to monitor authentication state
-export const monitorAuthState = (callback) => {
-  onAuthStateChanged(auth, callback);
-};
-
-// Funtion to register a new user with email and password
 export const register = async (email, password) => {
   try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Criar um documento de perfil vazio para forçar o preenchimento
+    await setDoc(doc(db, "users", user.uid), {
       email,
-      password
-    );
-    return userCredential.user;
+      name: "",
+      phone: "",
+      isProfileComplete: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    return user;
   } catch (error) {
     throw new Error(`Registration failed: ${error.message}`);
   }

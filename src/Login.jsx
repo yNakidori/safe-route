@@ -11,9 +11,8 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password);
-      navigate("/main");
-      alert("Login successful!");
+      const { user, isProfileComplete } = await login(email, password);
+      navigate(isProfileComplete ? "/main" : "/completar-perfil");
     } catch (err) {
       setError(err.message);
       console.error("Login error:", err);
