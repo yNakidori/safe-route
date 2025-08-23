@@ -20,13 +20,15 @@
  * @requires ../utils/AuthContext
  * @requires ../assets/Sidebar
  */
-import React, { useState, useEffect, use } from "react";
+
+import React, { useState, useEffect, use, Fragment } from "react";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import { db } from "../firebase/firebase.config";
 import { useAuth } from "../utils/AuthContext";
 import Sidebar from "../assets/Sidebar";
 import ProfilePictureUpload from "../utils/ProfilePictureUpload";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function UserProfilePage() {
   const { user } = useAuth();
@@ -82,32 +84,36 @@ export default function UserProfilePage() {
   };
 
   const handleSave = async () => {
-    try {
-      // Atualizar perfil do Firebase Auth
-      await updateProfile(user, {
-        displayName: userProfile.displayName,
-        photoURL: userProfile.photoURL,
-      });
+    // envolve toda a operação em uma Promise
+    toast.promise(
+      (async () => {
+        // Atualizar perfil do Firebase Auth
+        await updateProfile(user, {
+          displayName: userProfile.displayName,
+          photoURL: userProfile.photoURL,
+        });
 
-      // Atualizar dados no Firestore
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-          phone: userProfile.phone,
-          address: userProfile.address,
-          contacts: contacts,
-          routes: routes,
-          updatedAt: new Date(),
-        },
-        { merge: true }
-      );
+        // Atualizar dados no Firestore
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            phone: userProfile.phone,
+            address: userProfile.address,
+            contacts: contacts,
+            routes: routes,
+            updatedAt: new Date(),
+          },
+          { merge: true }
+        );
 
-      setIsEditing(false);
-      alert("Perfil atualizado com sucesso!");
-    } catch (error) {
-      console.error("Erro ao salvar:", error);
-      alert("Erro ao salvar perfil");
-    }
+        setIsEditing(false);
+      })(),
+      {
+        loading: "Salvando perfil...",
+        success: <b>Perfil atualizado com sucesso!</b>,
+        error: <b>Erro ao salvar perfil</b>,
+      }
+    );
   };
 
   const handleInputChange = (field, value) => {
@@ -143,6 +149,7 @@ export default function UserProfilePage() {
       <div className="fixed left-0 top-0 h-full z-10">
         <Sidebar />
       </div>
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="flex-1 ml-64 p-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
