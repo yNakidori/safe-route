@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "./utils/Login.util";
+import { Toaster } from "react-hot-toast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -31,6 +32,7 @@ export default function Login() {
           }}
         ></div>
 
+        <Toaster position="top-left" />
         {/* Right side with Login Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white shadow-lg">
           <div className="w-full max-w-md">
@@ -94,11 +96,6 @@ export default function Login() {
                 <p>ou use seu email e senha</p>
               </div>
               <form onSubmit={handleSubmit} class="space-y-4">
-                {error && (
-                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {error}
-                  </div>
-                )}
                 <div>
                   <label className="block text-gray-700">Email</label>
                   <input
