@@ -332,7 +332,9 @@ export default function UserProfilePage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email
                   </label>
-                  <p className="text-gray-900 py-2">{userProfile.email}</p>
+                  <p className="text-gray-900 py-2 truncate overflow-hidden">
+                    {userProfile.email}
+                  </p>
                 </div>
 
                 <div>
