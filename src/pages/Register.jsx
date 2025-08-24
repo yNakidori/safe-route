@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { register } from "../utils/Signin.util";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -13,7 +14,7 @@ export default function Register() {
     try {
       await register(email, password);
       // Handle successful registration (e.g., redirect to login)
-      alert("Registration successful!");
+      toast.success("Registro bem-sucedido! Por favor, faça login.");
       navigate("/main");
     } catch (err) {
       setError(err.message);
@@ -33,6 +34,7 @@ export default function Register() {
           }}
         ></div>
 
+        <Toaster position="top-left" />
         {/* Right side with Register Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white shadow-lg">
           <div className="w-full max-w-md">

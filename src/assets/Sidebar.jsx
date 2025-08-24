@@ -131,7 +131,7 @@ export default function Sidebar() {
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            Guia
+            Turismo
           </a>
 
           <a
@@ -164,7 +164,9 @@ export default function Sidebar() {
                 <p className="text-sm text-white font-medium">
                   {user.displayName || user.email?.split("@")[0]}
                 </p>
-                <p className="text-xs text-gray-400">{user.email}</p>
+                <p className="text-xs text-gray-400 max-w-[140px] truncate overflow-hidden">
+                  {user.email}
+                </p>
               </div>
             </div>
             {userProfile && userProfile.phone && (
