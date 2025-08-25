@@ -32,6 +32,8 @@ import toast, { Toaster } from "react-hot-toast";
 
 export default function UserProfilePage() {
   const { user } = useAuth();
+  // Sempre puxa o providerData do objeto user do Firebase Auth
+  const isGoogleProvider = Array.isArray(user?.providerData) && user.providerData.some((p) => p.providerId === "google.com");
   const [userProfile, setUserProfile] = useState({
     displayName: "",
     email: "",
@@ -332,9 +334,18 @@ export default function UserProfilePage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Email
                   </label>
-                  <p className="text-gray-900 py-2 truncate overflow-hidden">
-                    {userProfile.email}
-                  </p>
+                  {isEditing && !isGoogleProvider ? (
+                    <input
+                      type="email"
+                      value={userProfile.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  ) : (
+                    <p className="text-gray-900 py-2 truncate overflow-hidden">
+                      {userProfile.email}
+                    </p>
+                  )}
                 </div>
 
                 <div>
