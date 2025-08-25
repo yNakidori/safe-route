@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "./utils/Login.util";
+import { login, loginWithGoogle } from "./utils/Login.util";
 import { Toaster } from "react-hot-toast";
 
 export default function Login() {
@@ -17,6 +17,16 @@ export default function Login() {
     } catch (err) {
       setError(err.message);
       console.error("Login error:", err);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { user, isProfileComplete } = await loginWithGoogle();
+      navigate(isProfileComplete ? "/main" : "/completar-perfil");
+    } catch (err) {
+      setError(err.message);
+      console.error("Google login error:", err);
     }
   };
 
@@ -47,6 +57,7 @@ export default function Login() {
                 <div class="w-full lg:w-1/2 mb-2 lg:mb-0">
                   <button
                     type="button"
+                    onClick={handleGoogleLogin}
                     class="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300"
                   >
                     <svg
@@ -95,6 +106,11 @@ export default function Login() {
               <div class="mt-4 text-sm text-gray-600 text-center">
                 <p>ou use seu email e senha</p>
               </div>
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                  {error}
+                </div>
+              )}
               <form onSubmit={handleSubmit} class="space-y-4">
                 <div>
                   <label className="block text-gray-700">Email</label>

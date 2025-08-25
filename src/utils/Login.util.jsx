@@ -3,6 +3,8 @@ import {
   getAuth,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
 } from "firebase/auth";
 import { getFirestore, getDoc, doc } from "firebase/firestore";
@@ -12,6 +14,7 @@ import toast from "react-hot-toast";
 
 const auth = getAuth();
 const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider();
 
 function getFirebaseErrorMessage(error) {
   return firebaseErrorsMessages(error);
@@ -43,6 +46,31 @@ export const login = async (email, password) => {
     {
       loading: "Logando...",
       success: "Logado com sucesso!",
+      error: (err) => getFirebaseErrorMessage(err),
+    }
+  );
+};
+
+// Function to sign in with Google
+export const loginWithGoogle = async () => {
+  return toast.promise(
+    (async () => {
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      const user = userCredential.user;
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const profile = userDoc.exists() ? userDoc.data() : {};
+
+      // For Google login, we might need to create the user profile if it doesn't exist
+      // The display name is usually available from Google
+      const isProfileComplete =
+        user.displayName && profile?.phone?.trim() && profile?.address?.trim();
+
+      return { user, isProfileComplete };
+    })(),
+    {
+      loading: "Fazendo login com Google...",
+      success: "Login com Google realizado com sucesso!",
       error: (err) => getFirebaseErrorMessage(err),
     }
   );
