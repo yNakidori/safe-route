@@ -28,12 +28,15 @@ import { db } from "../firebase/firebase.config";
 import { useAuth } from "../utils/AuthContext";
 import Sidebar from "../assets/Sidebar";
 import ProfilePictureUpload from "../utils/ProfilePictureUpload";
+import AddContacts from "../utils/AddContacts";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function UserProfilePage() {
   const { user } = useAuth();
   // Sempre puxa o providerData do objeto user do Firebase Auth
-  const isGoogleProvider = Array.isArray(user?.providerData) && user.providerData.some((p) => p.providerId === "google.com");
+  const isGoogleProvider =
+    Array.isArray(user?.providerData) &&
+    user.providerData.some((p) => p.providerId === "google.com");
   const [userProfile, setUserProfile] = useState({
     displayName: "",
     email: "",
@@ -45,6 +48,7 @@ export default function UserProfilePage() {
   const [routes, setRoutes] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  const [showAddContact, setShowAddContact] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -338,7 +342,9 @@ export default function UserProfilePage() {
                     <input
                       type="email"
                       value={userProfile.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   ) : (
@@ -439,9 +445,20 @@ export default function UserProfilePage() {
                   </p>
                 )}
 
-                <button className="w-full mt-4 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors">
+                <button
+                  className="w-full mt-4 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors"
+                  onClick={() => setShowAddContact(true)}
+                >
                   + Adicionar Contato
                 </button>
+                <AddContacts
+                  open={showAddContact}
+                  onClose={() => setShowAddContact(false)}
+                  onAdd={(contact) => {
+                    setContacts((prev) => [...prev, contact]);
+                    toast.success("Contato adicionado!");
+                  }}
+                />
               </div>
             </div>
 
