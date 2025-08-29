@@ -29,6 +29,7 @@ import { useAuth } from "../utils/AuthContext";
 import Sidebar from "../assets/Sidebar";
 import ProfilePictureUpload from "../utils/ProfilePictureUpload";
 import AddContacts from "../utils/AddContacts";
+import NotificationsPanel from "../utils/NotificationsPanel";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function UserProfilePage() {
@@ -293,8 +294,8 @@ export default function UserProfilePage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Informações Pessoais */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Informações Pessoais - ocupa 2 colunas */}
             <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-semibold mb-6 flex items-center">
                 <svg
@@ -398,7 +399,7 @@ export default function UserProfilePage() {
               </div>
             </div>
 
-            {/* Contatos */}
+            {/* Contatos - ocupa 1 coluna */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-semibold mb-6 flex items-center">
                 <svg
@@ -462,8 +463,11 @@ export default function UserProfilePage() {
               </div>
             </div>
 
-            {/* Rotas Recentes */}
-            <div className="lg:col-span-3 bg-white rounded-xl shadow-lg p-6">
+            {/* Notificações - ocupa 1 coluna */}
+            <NotificationsPanel userId={user?.uid} />
+
+            {/* Rotas Recentes - ocupa todas as 4 colunas */}
+            <div className="lg:col-span-4 bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-semibold mb-6 flex items-center">
                 <svg
                   className="w-5 h-5 mr-2 text-purple-600"
