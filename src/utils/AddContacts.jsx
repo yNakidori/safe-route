@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { addDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase/firebase.config";
 import toast from "react-hot-toast";
 
@@ -19,7 +19,13 @@ const validationSchema = Yup.object({
     ),
 });
 
-export default function AddContacts({ open, onClose, onAdd }) {
+export default function AddContacts({
+  open,
+  onClose,
+  currentUserId,
+  currentUserEmail,
+  currentUserName,
+}) {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -40,11 +46,17 @@ export default function AddContacts({ open, onClose, onAdd }) {
       const results = [];
 
       emailSnapshot.forEach((doc) => {
-        results.push({ id: doc.id, ...doc.data() });
+        if (doc.id !== currentUserId) {
+          // Não incluir o próprio usuário
+          results.push({ id: doc.id, ...doc.data() });
+        }
       });
 
       phoneSnapshot.forEach((doc) => {
-        if (!results.find((user) => user.id === doc.id)) {
+        if (
+          doc.id !== currentUserId &&
+          !results.find((user) => user.id === doc.id)
+        ) {
           results.push({ id: doc.id, ...doc.data() });
         }
       });
@@ -62,16 +74,51 @@ export default function AddContacts({ open, onClose, onAdd }) {
     }
   };
 
-  const handleAddContact = () => {
+  const checkExistingRequest = async (fromUserId, toUserId) => {
+    try {
+      const requestsRef = collection(db, "contactRequests");
+      const q = query(
+        requestsRef,
+        where("fromUserId", "==", fromUserId),
+        where("toUserId", "==", toUserId),
+        where("status", "==", "pending")
+      );
+      const querySnapshot = await getDocs(q);
+      return !querySnapshot.empty;
+    } catch (error) {
+      console.error("Erro ao verificar solicitação existente:", error);
+      return false;
+    }
+  };
+
+  const handleSendRequest = async () => {
     if (selectedUser) {
-      onAdd({
-        id: selectedUser.id,
-        name: selectedUser.displayName || selectedUser.name || "Usuário",
-        email: selectedUser.email,
-        phone: selectedUser.phone,
-        photoURL: selectedUser.photoURL || null,
-      });
-      handleClose();
+      try {
+        const existingRequest = await checkExistingRequest(
+          currentUserId,
+          selectedUser.id
+        );
+        if (existingRequest) {
+          toast.error("Você já enviou uma solicitação para este usuário!");
+          return;
+        }
+
+        await addDoc(collection(db, "contactRequests"), {
+          fromUserId: currentUserId,
+          toUserId: selectedUser.id,
+          fromUserName: currentUserName,
+          fromUserEmail: currentUserEmail,
+          fromUserPhoto: null,
+          status: "pending",
+          createdAt: new Date().toISOString(),
+        });
+
+        toast.success("Solicitação de contato enviada!");
+        handleClose();
+      } catch (error) {
+        toast.error("Erro ao enviar solicitação");
+        console.error("Send request error:", error);
+      }
     }
   };
 
@@ -113,7 +160,7 @@ export default function AddContacts({ open, onClose, onAdd }) {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-800">
-                Adicionar Contato
+                Enviar Solicitação
               </h3>
             </div>
             <button
@@ -257,12 +304,12 @@ export default function AddContacts({ open, onClose, onAdd }) {
             </div>
           )}
 
-          {/* Botões de ação */}
+          {/* Botão de enviar solicitação */}
           {selectedUser && (
             <div className="flex gap-3 mt-6">
               <button
-                onClick={handleAddContact}
-                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 transition-all duration-200 transform hover:scale-[1.02]"
+                onClick={handleSendRequest}
+                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold py-3 rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-[1.02]"
               >
                 <div className="flex items-center justify-center">
                   <svg
@@ -275,10 +322,10 @@ export default function AddContacts({ open, onClose, onAdd }) {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                      d="M12 4v16m8-8H4"
                     />
                   </svg>
-                  Adicionar
+                  Enviar Solicitação
                 </div>
               </button>
             </div>

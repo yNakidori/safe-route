@@ -455,10 +455,9 @@ export default function UserProfilePage() {
                 <AddContacts
                   open={showAddContact}
                   onClose={() => setShowAddContact(false)}
-                  onAdd={(contact) => {
-                    setContacts((prev) => [...prev, contact]);
-                    toast.success("Contato adicionado!");
-                  }}
+                  currentUserId={user?.uid}
+                  currentUserEmail={user?.email}
+                  currentUserName={user?.displayName || user?.name || "Usuário"}
                 />
               </div>
             </div>
