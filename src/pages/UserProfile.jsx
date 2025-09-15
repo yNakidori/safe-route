@@ -2,11 +2,20 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field } from "formik";
 import { updateEmail, updateProfile } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { db } from "../firebase/firebase.config";
 import { useAuth } from "../utils/AuthContext";
 import CepSearch from "../utils/CepSearch";
 import AddressPopover from "../utils/AddressPopover";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function UserProfile() {
   const { user } = useAuth();
@@ -35,9 +44,40 @@ export default function UserProfile() {
     fetchData();
   }, [user]);
 
+  const checkPhoneExists = async (phone, currentUserId) => {
+    try {
+      const userRef = collection(db, "users");
+      const q = query(userRef, where("phone", "==", phone));
+      const querySnapshot = await getDocs(q);
+
+      const existingUser = querySnapshot.docs.find(
+        (doc) => doc.id !== currentUserId
+      );
+      return existingUser ? true : false;
+    } catch (error) {
+      console.error("Erro ao verificar telefone:", error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       if (!user) return;
+
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      const currentPhone = docSnap.exists() ? docSnap.data().phone : "";
+
+      if (values.phone !== currentPhone) {
+        const phoneExists = await checkPhoneExists(values.phone, user.uid);
+        if (phoneExists) {
+          toast.error(
+            "Este número de telefone já está sendo usado por outro usuário!"
+          );
+          setSubmitting(false);
+          return;
+        }
+      }
 
       if (values.email !== user.email) {
         await updateEmail(user, values.email);
@@ -52,10 +92,11 @@ export default function UserProfile() {
         address: values.address,
       });
 
+      toast.success("Perfil atualizado com sucesso!");
       navigate("/main", { replace: true });
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
-      alert(`Erro: ${error.message}`);
+      toast.error(`Erro: ${error.message}`);
     } finally {
       setSubmitting(false);
     }
@@ -73,6 +114,7 @@ export default function UserProfile() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+      <Toaster position="top-left" />
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="text-center mb-8">

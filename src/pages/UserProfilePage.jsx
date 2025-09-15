@@ -28,12 +28,16 @@ import { db } from "../firebase/firebase.config";
 import { useAuth } from "../utils/AuthContext";
 import Sidebar from "../assets/Sidebar";
 import ProfilePictureUpload from "../utils/ProfilePictureUpload";
+import AddContacts from "../utils/AddContacts";
+import NotificationsPanel from "../utils/NotificationsPanel";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function UserProfilePage() {
   const { user } = useAuth();
   // Sempre puxa o providerData do objeto user do Firebase Auth
-  const isGoogleProvider = Array.isArray(user?.providerData) && user.providerData.some((p) => p.providerId === "google.com");
+  const isGoogleProvider =
+    Array.isArray(user?.providerData) &&
+    user.providerData.some((p) => p.providerId === "google.com");
   const [userProfile, setUserProfile] = useState({
     displayName: "",
     email: "",
@@ -45,6 +49,7 @@ export default function UserProfilePage() {
   const [routes, setRoutes] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [showPhotoUpload, setShowPhotoUpload] = useState(false);
+  const [showAddContact, setShowAddContact] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -289,8 +294,8 @@ export default function UserProfilePage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Informações Pessoais */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Informações Pessoais - ocupa 2 colunas */}
             <div className="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-semibold mb-6 flex items-center">
                 <svg
@@ -338,7 +343,9 @@ export default function UserProfilePage() {
                     <input
                       type="email"
                       value={userProfile.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   ) : (
@@ -392,7 +399,7 @@ export default function UserProfilePage() {
               </div>
             </div>
 
-            {/* Contatos */}
+            {/* Contatos - ocupa 1 coluna */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-semibold mb-6 flex items-center">
                 <svg
@@ -439,14 +446,30 @@ export default function UserProfilePage() {
                   </p>
                 )}
 
-                <button className="w-full mt-4 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors">
+                <button
+                  className="w-full mt-4 px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-purple-400 hover:text-purple-600 transition-colors"
+                  onClick={() => setShowAddContact(true)}
+                >
                   + Adicionar Contato
                 </button>
+                <AddContacts
+                  open={showAddContact}
+                  onClose={() => setShowAddContact(false)}
+                  currentUserId={user?.uid}
+                  currentUserEmail={user?.email}
+                  currentUserName={user?.displayName || user?.name || "Usuário"}
+                  currentUserPhoto={
+                    user?.photoURL || userProfile.photoURL || null
+                  }
+                />
               </div>
             </div>
 
-            {/* Rotas Recentes */}
-            <div className="lg:col-span-3 bg-white rounded-xl shadow-lg p-6">
+            {/* Notificações - ocupa 1 coluna */}
+            <NotificationsPanel userId={user?.uid} />
+
+            {/* Rotas Recentes - ocupa todas as 4 colunas */}
+            <div className="lg:col-span-4 bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-semibold mb-6 flex items-center">
                 <svg
                   className="w-5 h-5 mr-2 text-purple-600"
