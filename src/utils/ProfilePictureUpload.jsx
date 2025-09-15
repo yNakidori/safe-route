@@ -3,6 +3,7 @@ import { auth } from "../firebase/firebase.config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
 import { storage } from "../firebase/firebase.config";
+import toast from "react-hot-toast";
 
 export default function ProfilePictureUpload({
   currentPhotoURL,
@@ -61,7 +62,7 @@ export default function ProfilePictureUpload({
         onUploadSuccess(downloadURL);
       }
 
-      alert("Foto de perfil atualizada com sucesso!");
+      toast.success("Foto de perfil atualizada com sucesso!");
       setFile(null);
     } catch (error) {
       console.error("Erro no upload:", error);

@@ -25,6 +25,7 @@ export default function AddContacts({
   currentUserId,
   currentUserEmail,
   currentUserName,
+  currentUserPhoto,
 }) {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -108,7 +109,7 @@ export default function AddContacts({
           toUserId: selectedUser.id,
           fromUserName: currentUserName,
           fromUserEmail: currentUserEmail,
-          fromUserPhoto: null,
+          fromUserPhoto: currentUserPhoto || null,
           status: "pending",
           createdAt: new Date().toISOString(),
         });

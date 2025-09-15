@@ -458,6 +458,9 @@ export default function UserProfilePage() {
                   currentUserId={user?.uid}
                   currentUserEmail={user?.email}
                   currentUserName={user?.displayName || user?.name || "Usuário"}
+                  currentUserPhoto={
+                    user?.photoURL || userProfile.photoURL || null
+                  }
                 />
               </div>
             </div>
