@@ -89,6 +89,8 @@ export default function UserProfile() {
 
       await setDoc(doc(db, "users", user.uid), {
         phone: values.phone,
+        email: values.email,
+        displayName: values.name,
         address: values.address,
       });
 
