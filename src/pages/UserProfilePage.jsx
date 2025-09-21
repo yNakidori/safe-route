@@ -104,6 +104,9 @@ export default function UserProfilePage() {
         await setDoc(
           doc(db, "users", user.uid),
           {
+            displayName: userProfile.displayName,
+            email: userProfile.email,
+            photoURL: userProfile.photoURL,
             phone: userProfile.phone,
             address: userProfile.address,
             contacts: contacts,
