@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login, loginWithGoogle } from "./utils/Login.util";
+import { login, loginWithGoogle, loginWithGitHub } from "./utils/Login.util";
 import { Toaster } from "react-hot-toast";
 
 export default function Login() {
@@ -27,6 +27,16 @@ export default function Login() {
     } catch (err) {
       setError(err.message);
       console.error("Google login error:", err);
+    }
+  };
+
+  const handleGitHubLogin = async () => {
+    try {
+      const { user, isProfileComplete } = await loginWithGitHub();
+      navigate(isProfileComplete ? "/main" : "/completar-perfil");
+    } catch (err) {
+      setError(err.message);
+      console.error("GitHub login error:", err);
     }
   };
 
@@ -89,6 +99,7 @@ export default function Login() {
                 <div class="w-full lg:w-1/2 ml-0 lg:ml-2">
                   <button
                     type="button"
+                    onClick={handleGitHubLogin}
                     class="w-full flex justify-center items-center gap-2 bg-white text-sm text-gray-600 p-2 rounded-md hover:bg-gray-50 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors duration-300"
                   >
                     <svg

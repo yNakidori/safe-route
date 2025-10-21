@@ -5,6 +5,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
+  GithubAuthProvider,
   signOut,
 } from "firebase/auth";
 import { getFirestore, getDoc, doc } from "firebase/firestore";
@@ -15,6 +16,7 @@ import toast from "react-hot-toast";
 const auth = getAuth();
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
+const githubProvider = new GithubAuthProvider();
 
 function getFirebaseErrorMessage(error) {
   return firebaseErrorsMessages(error);
@@ -71,6 +73,30 @@ export const loginWithGoogle = async () => {
     {
       loading: "Fazendo login com Google...",
       success: "Login com Google realizado com sucesso!",
+      error: (err) => getFirebaseErrorMessage(err),
+    }
+  );
+};
+
+export const loginWithGitHub = async () => {
+  return toast.promise(
+    (async () => {
+      const userCredential = await signInWithPopup(auth, githubProvider);
+      const user = userCredential.user;
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const profile = userDoc.exists() ? userDoc.data() : {};
+
+      const displayName = user.displayName || user.email || 'Usuário GitHub';
+      
+      const isProfileComplete =
+        displayName && profile?.phone?.trim() && profile?.address?.trim();
+
+      return { user, isProfileComplete };
+    })(),
+    {
+      loading: "Fazendo login com GitHub...",
+      success: "Login com GitHub realizado com sucesso!",
       error: (err) => getFirebaseErrorMessage(err),
     }
   );
